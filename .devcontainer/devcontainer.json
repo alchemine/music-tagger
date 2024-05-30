@@ -43,12 +43,10 @@
     "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}"
   },
 
-  "postCreateCommand": "sudo chown -R vscode /app && poetry install"
+  "postCreateCommand": "poetry install"
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
-
-  // "remoteUser": "vscode",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {
