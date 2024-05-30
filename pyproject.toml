@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "music-tagger"
+version = "0.1.0"
+description = "Music tagger"
+authors = ["alchemine <djyoon0223@gmail.com>"]
+readme = "README.md"
+packages = [{include = "music_tagger"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
