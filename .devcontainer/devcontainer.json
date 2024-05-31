@@ -34,7 +34,10 @@
     }
   },
 
-  "mounts": ["source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind"],
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind",
+    "source=D:\\music,target=/music,type=bind"
+  ],
   "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
   "workspaceFolder": "/app",
 
