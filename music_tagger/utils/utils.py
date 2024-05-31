@@ -1,24 +1,22 @@
+"""Generic utility functions."""
+
 import os
 import shutil
 from glob import glob
 from itertools import product
 from os.path import join, isfile, exists
 from pathlib import Path
+from textwrap import dedent as dedent_
 
 from tqdm import tqdm
 from mutagen import File
 
-
-ARTIST_DIR = "/mnt/d/music/artist"
-DEFAULT_MUSIC_ALBUM = "single"
-DEFAULT_VIDEO_ALBUM = "video"
-DEFAULT_ALBUMS = (DEFAULT_MUSIC_ALBUM, DEFAULT_VIDEO_ALBUM)
-REMOVE_WORDS = ["xfd", "trailer", "teaser"]
-REMIX_WORDS = ["remix", "live"]
-INCOMING_DIR = "incoming"
+from music_tagger.utils.config import ARTIST_DIR, DEFAULT_ALBUMS, REMIX_WORDS
 
 
-def set_tags_album(artist: str, album: str, date: str = None, deduplication: bool = True) -> None:
+def set_tags_album(
+    artist: str, album: str, date: str = None, deduplication: bool = True
+) -> None:
     # 1. Set tags
     root_path = get_valid_path(join(ARTIST_DIR, artist))
     incoming_files = get_files(root_path)
@@ -26,7 +24,7 @@ def set_tags_album(artist: str, album: str, date: str = None, deduplication: boo
         tags = {"artist": artist, "album": album}
         if date:
             tags["date"] = date
-        
+
         try:
             set_tags(file, tags)
         except Exception as e:
@@ -49,12 +47,11 @@ def set_tags_album(artist: str, album: str, date: str = None, deduplication: boo
     print("[success] Move incoming files to album directory")
 
 
-
 def get_valid_path(path: str) -> str:
     p = Path(path)
     parent = p.parent
     name = p.name
-    for char in ("\\", "/", ":", "*", "\"", "<", ">", "|"):
+    for char in ("\\", "/", ":", "*", '"', "<", ">", "|"):
         valid_name = name.replace(char, "")
     return join(parent, valid_name)
 
@@ -85,7 +82,7 @@ def deduplicate(incoming_infos: list[dict], existing_infos: list[dict]) -> None:
     for inc_info, ext_info in tqdm(list(product(incoming_infos, existing_infos))):
         if inc_info == ext_info:
             continue
-        
+
         if check_duplicate(inc_info, ext_info):
             inc_default_album = inc_info["album"] in DEFAULT_ALBUMS
             ext_default_album = ext_info["album"] in DEFAULT_ALBUMS
@@ -104,6 +101,7 @@ def deduplicate(incoming_infos: list[dict], existing_infos: list[dict]) -> None:
                 print(e)
                 print("Error in", inc_info["file"], ext_info["file"])
 
+
 def check_duplicate(inc_info: dict, ext_info: dict) -> bool:
     inc_title, ext_title = inc_info["title"].lower(), ext_info["title"].lower()
     cond_dup = inc_title == ext_title
@@ -121,8 +119,16 @@ def get_info(file: str) -> dict:
         tags = audio.tags
     else:
         raise ValueError(f"Invalid file: {file}")
-    
-    tags = {"title": tags["title"][0], "album": tags["album"][0], "date": tags.get("date", [None])[0]}
+
+    tags = {
+        "title": tags["title"][0],
+        "album": tags["album"][0],
+        "date": tags.get("date", [None])[0],
+    }
     artist, *_, name = file.removeprefix(ARTIST_DIR + "/").split("/")
     tags.update({"file": file, "artist": artist, "name": name})
     return tags
+
+
+def dedent(text: str) -> str:
+    return dedent_(text.strip("\n"))
